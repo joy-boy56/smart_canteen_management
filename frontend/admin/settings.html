@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings - Smart Canteen</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Canteen</h1>
+            <p>Admin Settings</p>
+        </header>
+        <main>
+            <div class="settings-container">
+                <div class="settings-header">
+                    <h2>UPI Payment Settings</h2>
+                    <button id="logout-btn" class="btn btn-danger">Logout</button>
+                </div>
+                <div class="settings-content">
+                    <div class="settings-widget">
+                        <h3>UPI ID</h3>
+                        <p>Enter your UPI ID to receive payments from customers.</p>
+                        <div class="form-group">
+                            <label for="upi-id">UPI ID</label>
+                            <input type="text" id="upi-id" placeholder="Enter your UPI ID (e.g., name@bank)">
+                        </div>
+                        <button id="save-upi-btn" class="btn btn-primary">Save UPI ID</button>
+                        <div id="upi-status" class="status-message"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/auth.js"></script>
+    <script>
+        // Settings page functionality
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check if user is admin
+            const token = localStorage.getItem('smart_canteen_token');
+            if (!token) {
+                window.location.href = '../login.html';
+                return;
+            }
+
+            // Load current UPI ID
+            await loadUPIId();
+
+            // Setup event listeners
+            document.getElementById('save-upi-btn').addEventListener('click', saveUPIId);
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.removeItem('smart_canteen_token');
+                window.location.href = '../login.html';
+            });
+        });
+
+        async function loadUPIId() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/upi-id`, {
+                    headers: {
+                        ...getAuthHeaders(),
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('upi-id').value = data.upi_id || '';
+                } else {
+                    showStatus('Failed to load UPI ID', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading UPI ID:', error);
+                showStatus('Error loading UPI ID', 'error');
+            }
+        }
+
+        async function saveUPIId() {
+            const upiId = document.getElementById('upi-id').value.trim();
+            if (!upiId) {
+                showStatus('Please enter a UPI ID', 'error');
+                return;
+            }
+
+            // Show loading state
+            const saveBtn = document.getElementById('save-upi-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/upi-id`, {
+                    method: 'PUT',
+                    headers: {
+                        ...getAuthHeaders(),
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ upi_id: upiId })
+                });
+
+                if (response.ok) {
+                    showStatus('UPI ID saved successfully', 'success');
+                } else {
+                    const errorData = await response.json();
+                    showStatus(errorData.detail || 'Failed to save UPI ID', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving UPI ID:', error);
+                showStatus('Error saving UPI ID', 'error');
+            } finally {
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('upi-status');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type}`;
+            // Hide after 3 seconds
+            setTimeout(() => {
+                statusEl.textContent = '';
+                statusEl.className = 'status-message';
+            }, 3000);
+        }
+
+        // API base URL and auth headers (same as in auth.js)
+        const API_BASE_URL = 'http://localhost:8000/api';
+
+        function getAuthHeaders() {
+            const token = localStorage.getItem('smart_canteen_token');
+            return token ? { 'Authorization': `Bearer ${token}` } : {};
+        }
+    </script>
+</body>
+</html>

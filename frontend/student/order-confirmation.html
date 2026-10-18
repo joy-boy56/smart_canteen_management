@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Smart Canteen</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Canteen</h1>
+            <p>Order Confirmation</p>
+        </header>
+        <main>
+            <div class="order-confirmation">
+                <h2>Order Placed Successfully!</h2>
+                <div id="order-details" class="order-details">
+                    <div class="loading">Loading order details...</div>
+                </div>
+                <div id="token-section" class="token-section">
+                    <!-- Token and QR code will be displayed here -->
+                </div>
+                <div class="order-actions">
+                    <a href="menu.html" class="btn btn-secondary">Place Another Order</a>
+                    <a href="orders.html" class="btn btn-primary">View My Orders</a>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="order.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pickup Slot Management - Smart Canteen</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Canteen</h1>
+            <p>Pickup Slot Management</p>
+        </header>
+        <main>
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h2>Manage Pickup Slots</h2>
+                    <button id="logout-btn" class="btn btn-danger">Logout</button>
+                    <button id="add-slot-btn" class="btn btn-primary">Add New Slot</button>
+                </div>
+                <div class="dashboard-content">
+                    <div class="slot-form-container" id="slot-form-container" style="display: none;">
+                        <div class="slot-form-header">
+                            <h3>Add New Pickup Slot</h3>
+                            <button id="close-form-btn" class="btn btn-secondary">Close</button>
+                        </div>
+                        <div class="slot-form-body">
+                            <div class="form-group">
+                                <label for="slot-start-time">Start Time</label>
+                                <input type="datetime-local" id="slot-start-time" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="slot-end-time">End Time</label>
+                                <input type="datetime-local" id="slot-end-time" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="slot-booking-cutoff">Booking Cutoff (Optional)</label>
+                                <input type="datetime-local" id="slot-booking-cutoff">
+                                <small>Bookings must be made before this time</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="slot-max-orders">Maximum Orders</label>
+                                <input type="number" id="slot-max-orders" min="1" value="20" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="slot-safety-factor">Safety Factor (0-1)</label>
+                                <input type="number" id="slot-safety-factor" min="0" max="1" step="0.1" value="0.8" required>
+                                <small>Used for capacity planning (e.g., 0.8 = 80% of max orders)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="slot-description">Description (Optional)</label>
+                                <input type="text" id="slot-description" placeholder="e.g., Lunch slot, Dinner slot">
+                            </div>
+                            <div class="form-group">
+                                <label for="slot-status">Status</label>
+                                <select id="slot-status">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="closed">Closed</option>
+                                </select>
+                            </div>
+                            <button id="save-slot-btn" class="btn btn-primary">Save Slot</button>
+                        </div>
+                    </div>
+
+                    <div class="widget">
+                        <h3>Available Pickup Slots</h3>
+                        <div id="slots-list" class="slots-list">
+                            <div class="loading">Loading slots...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="slots.js"></script>
+</body>
+</html>

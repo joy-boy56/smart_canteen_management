@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Smart Canteen</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Canteen</h1>
+            <p>Menu</p>
+        </header>
+        <main>
+            <div class="menu-header">
+                <h2>Today's Menu</h2>
+                <a href="cart.html" class="btn btn-secondary">View Cart (<span id="cart-count">0</span>)</a>
+            </div>
+            <div id="menu-items" class="menu-grid">
+                <!-- Menu items will be loaded here -->
+                <div class="loading">Loading menu...</div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/auth.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="menu.js"></script>
+</body>
+</html>
