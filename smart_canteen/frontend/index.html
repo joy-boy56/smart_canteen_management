@@ -189,6 +189,69 @@
         border: 1px solid #CBD5E1;
       }
     }
+
+    /* Mobile-First & Responsive Touch Optimization */
+    html {
+      scroll-behavior: smooth;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pb-safe {
+      padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 5rem);
+    }
+
+    .table-scroll-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+
+    @keyframes spinFast {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-fast {
+      animation: spinFast 0.75s linear infinite;
+    }
+
+    .slot-card-avail {
+      border-color: #3F72AF;
+      background-color: #FFFFFF;
+    }
+    .slot-card-avail:hover {
+      border-color: #112D4E;
+      background-color: #F9F7F7;
+    }
+    .slot-card-limited {
+      border-color: #F59E0B;
+      background-color: #FFFBEB;
+    }
+    .slot-card-full {
+      border-color: #FCA5A5;
+      background-color: #FEF2F2;
+      opacity: 0.75;
+    }
+    .slot-card-selected {
+      border-color: #112D4E !important;
+      background-color: #DBE2EF !important;
+      box-shadow: 0 0 0 2px #3F72AF;
+    }
   </style>
 </head>
 
@@ -235,26 +298,24 @@
           <div class="flex items-center gap-2">
             <h1 class="text-base font-bold tracking-tight text-[#112D4E]">Smart Canteen</h1>
             <span id="connModeBadge"
-              class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#DBE2EF] text-[#112D4E] border border-[#3F72AF]/30">Campus
-              Portal</span>
+              class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">● Live Backend</span>
           </div>
-          <p class="text-[11px] text-[#4A607A] hidden sm:block">Slot-Based Pre-Ordering, UPI Payments &amp; Queue
-            Optimization</p>
+          <p class="text-[11px] text-[#4A607A] hidden sm:block">Slot-Based Pre-Ordering, UPI Payments &amp; Queue Optimization</p>
         </div>
       </div>
 
-      <!-- Active Session Bar (Shown only when logged in; no cross-role clutter on the same homescreen) -->
+      <!-- Active Session Bar (Shown only when logged in; role-isolated) -->
       <div id="headerSessionBar" class="flex items-center flex-wrap gap-2">
         <button id="navScenarioTourBtn" type="button" onclick="openScenarioModal()"
-          class="px-2.5 py-1.5 rounded-lg border border-[#DBE2EF] bg-[#F9F7F7] text-[#3F72AF] text-xs font-semibold hover:bg-[#DBE2EF]/60 transition">
+          class="px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg border border-[#DBE2EF] bg-[#F9F7F7] text-[#3F72AF] text-[10px] sm:text-xs font-semibold hover:bg-[#DBE2EF]/60 transition">
           Demo Scenarios (A–E)
         </button>
         <div class="flex items-center gap-2 pl-2 border-l border-[#DBE2EF]">
           <span id="currentUserLabel"
-            class="text-xs font-bold text-[#112D4E] px-2.5 py-1 rounded-lg bg-[#DBE2EF]/60 max-w-[200px] truncate"></span>
-          <button id="openAuthModalBtn" type="button" onclick="switchWorkspaceMode('student_login')"
-            class="px-3 py-1.5 rounded-lg border border-[#3F72AF]/40 bg-white text-xs font-bold text-[#112D4E] hover:bg-[#DBE2EF]/40 shadow-sm transition">
-            Switch Role / Sign Out
+            class="text-xs font-bold text-[#112D4E] px-2.5 py-1 rounded-lg bg-[#DBE2EF]/60 max-w-[120px] sm:max-w-[200px] truncate"></span>
+          <button id="openAuthModalBtn" type="button" onclick="handleLogout()"
+            class="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-[#3F72AF]/40 bg-white text-[11px] sm:text-xs font-bold text-[#112D4E] hover:bg-[#DBE2EF]/40 shadow-sm transition">
+            Sign Out
           </button>
         </div>
       </div>
@@ -536,29 +597,27 @@
   <main id="studentWorkspace" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5">
     <!-- Student/Staff Clustered Step Bar -->
     <div class="mini-cluster flex flex-wrap items-center justify-between gap-2 mb-4 no-print">
-      <div class="inline-flex flex-wrap gap-1.5">
+      <div class="grid grid-cols-4 sm:flex sm:flex-wrap gap-1.5 w-full sm:w-auto">
         <button id="stuTabMenuBtn" type="button" onclick="switchStudentTab('menu')"
-          class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          1. Browse Menu &amp; Cart <span id="cartCountBadge"
-            class="ml-1 px-1.5 py-0.5 rounded-full text-[11px] bg-white/25">0</span>
+          class="px-2 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 min-h-[44px] sm:min-h-0 bg-[#112D4E] text-white shadow-sm">
+          <span>🍽</span> <span class="hidden sm:inline">1. Browse Menu &amp; Cart</span><span class="sm:hidden">Menu</span>
+          <span id="cartCountBadge" class="ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] bg-white/30">0</span>
         </button>
         <button id="stuTabCheckoutBtn" type="button" onclick="switchStudentTab('checkout')"
-          class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          2. Choose Pickup Slot &amp; Pay
+          class="px-2 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 min-h-[44px] sm:min-h-0 bg-white border border-[#DBE2EF] text-[#112D4E]">
+          <span>🛒</span> <span class="hidden sm:inline">2. Choose Pickup Slot &amp; Pay</span><span class="sm:hidden">Cart</span>
         </button>
         <button id="stuTabTokenBtn" type="button" onclick="switchStudentTab('token')"
-          class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          3. Active Order &amp; QR Token <span id="activeOrderDot"
-            class="hidden ml-1 w-2 h-2 rounded-full bg-[#DBE2EF] inline-block"></span>
+          class="px-2 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 min-h-[44px] sm:min-h-0 bg-white border border-[#DBE2EF] text-[#112D4E]">
+          <span>🎫</span> <span class="hidden sm:inline">3. Active Order &amp; QR Token</span><span class="sm:hidden">Token</span>
+          <span id="activeOrderDot" class="hidden ml-1 w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
         </button>
         <button id="stuTabProfileBtn" type="button" onclick="switchStudentTab('profile')"
-          class="px-3 py-1.5 rounded-lg text-xs font-bold transition">
-          4. Profile &amp; Order History
+          class="px-2 sm:px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1 min-h-[44px] sm:min-h-0 bg-white border border-[#DBE2EF] text-[#112D4E]">
+          <span>👤</span> <span class="hidden sm:inline">4. Profile &amp; Order History</span><span class="sm:hidden">Profile</span>
         </button>
       </div>
-      <div class="text-[11px] text-[#4A607A] px-2 py-1 rounded bg-white border border-[#DBE2EF]">
-        Date: <strong class="text-[#112D4E] mono">2026-10-18</strong>
-      </div>
+      <div id="slotDateChipsContainer" class="flex items-center gap-1.5 overflow-x-auto py-1"></div>
     </div>
 
     <!-- STUDENT TAB 1: MENU & CART -->
@@ -619,8 +678,7 @@
                 <p class="text-xs text-[#4A607A]">Select an open 15-minute pickup window. Slot capacity is validated
                   atomically at checkout.</p>
               </div>
-              <span class="text-xs font-medium px-2.5 py-1 rounded-md bg-stone-100 text-[#112D4E] mono">Date:
-                2026-10-18</span>
+              <div id="checkoutDateChipsContainer" class="flex items-center gap-1.5 overflow-x-auto py-1"></div>
             </div>
 
             <!-- Alert box when a full slot is clicked (Scenario C) -->
@@ -744,6 +802,24 @@
         </div>
       </div>
     </section>
+
+    <!-- Mobile Sticky Cart Floating Bar (Mobile Viewports <1024px) -->
+    <div id="mobileCartFloatingBar"
+      class="hidden lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-[#DBE2EF] p-3 shadow-xl transition-all pb-safe">
+      <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-lg bg-[#DBE2EF] flex items-center justify-center text-lg">🛒</div>
+          <div>
+            <div class="text-[11px] text-[#4A607A] font-medium"><span id="mobileCartCount">0</span> items in cart</div>
+            <div id="mobileCartTotal" class="text-sm font-extrabold text-[#112D4E] mono">₹0.00</div>
+          </div>
+        </div>
+        <button type="button" onclick="switchStudentTab('checkout')"
+          class="py-2.5 px-4 rounded-lg font-bold text-xs btn-primary shadow flex items-center gap-1.5 min-h-[44px]">
+          <span>Choose Slot &amp; Pay</span> &rarr;
+        </button>
+      </div>
+    </div>
   </main>
 
   <!-- =================================================================== -->
@@ -1879,10 +1955,277 @@
       };
     }
 
+        // =========================================================================
+    // CENTRAL BACKEND REST API CLIENT & DATA LOADERS
     // =========================================================================
+    function setConnectionMode(isLive) {
+      APP_STATE.isBackendLive = isLive;
+      const badge = document.getElementById('connModeBadge');
+      if (!badge) return;
+      if (isLive) {
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+        badge.innerHTML = '● Live Backend';
+      } else {
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300';
+        badge.innerHTML = '● Offline Demo';
+      }
+    }
+
+    async function api(method, path, body = null) {
+      const headers = { 'Accept': 'application/json' };
+      if (body !== null && !(body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+      }
+      if (APP_STATE.apiToken) {
+        headers['Authorization'] = `Bearer ${APP_STATE.apiToken}`;
+      }
+      const opts = {
+        method,
+        headers,
+        credentials: 'include'
+      };
+      if (body !== null) {
+        opts.body = (body instanceof FormData) ? body : JSON.stringify(body);
+      }
+      try {
+        const res = await fetch(path, opts);
+        let data;
+        const ct = res.headers.get('content-type') || '';
+        if (ct.includes('application/json')) {
+          data = await res.json();
+        } else {
+          data = await res.text();
+        }
+        if (!res.ok) {
+          const detail = (data && data.detail) ? (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)) : (res.statusText || 'API Request Failed');
+          const err = new Error(detail);
+          err.status = res.status;
+          err.data = data;
+          throw err;
+        }
+        setConnectionMode(true);
+        return data;
+      } catch (err) {
+        if ((err.message && err.message.includes('fetch')) || err.name === 'TypeError') {
+          setConnectionMode(false);
+        }
+        throw err;
+      }
+    }
+
+    function getStandardDateChoices() {
+      return [
+        { label: 'Today (Oct 27)', value: '2026-10-27' },
+        { label: 'Tomorrow (Oct 28)', value: '2026-10-28' },
+        { label: 'Day After (Oct 29)', value: '2026-10-29' },
+        { label: 'Demo Date (Oct 18)', value: '2026-10-18' }
+      ];
+    }
+
+    function renderDateChips() {
+      const choices = getStandardDateChoices();
+      const containers = [
+        document.getElementById('slotDateChipsContainer'),
+        document.getElementById('checkoutDateChipsContainer')
+      ];
+      containers.forEach(cont => {
+        if (!cont) return;
+        cont.innerHTML = choices.map(c => {
+          const isSel = (c.value === APP_STATE.selectedSlotDate);
+          return `<button type="button" onclick="selectSlotDate('${c.value}')" class="px-2.5 py-1 text-xs font-semibold rounded-lg border transition ${
+            isSel ? 'bg-[#112D4E] text-white border-[#112D4E] shadow-sm' : 'bg-white text-[#4A607A] border-[#DBE2EF] hover:bg-slate-50'
+          }">${c.label}</button>`;
+        }).join('');
+      });
+    }
+
+    async function selectSlotDate(dateStr) {
+      APP_STATE.selectedSlotDate = dateStr;
+      renderDateChips();
+      await loadSlots(dateStr);
+    }
+
+    function updateMobileCartBar(cartData) {
+      const bar = document.getElementById('mobileCartFloatingBar');
+      if (!bar) return;
+      const c = cartData || computeAuthoritativeCart();
+      const countEl = document.getElementById('mobileCartCount');
+      const totalEl = document.getElementById('mobileCartTotal');
+      if (countEl) countEl.textContent = `${c.totalQty} items`;
+      if (totalEl) totalEl.textContent = `₹${c.totalInr.toFixed(2)}`;
+
+      const isStudent = (APP_STATE.workspaceMode === 'student');
+      const isMenuTab = (APP_STATE.studentTab === 'menu');
+      if (isStudent && isMenuTab && c.totalQty > 0) {
+        bar.classList.remove('hidden');
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
+    async function loadMenuItems() {
+      try {
+        const data = await api('GET', '/api/menu');
+        if (Array.isArray(data) && data.length) {
+          APP_STATE.menuItems = data;
+          renderStudentMenu();
+          renderAdminMenuManage();
+        }
+      } catch (e) {
+        console.warn('loadMenuItems API fallback:', e.message);
+      }
+    }
+
+    async function loadSlots(dateStr) {
+      const d = dateStr || APP_STATE.selectedSlotDate || '2026-10-27';
+      try {
+        const data = await api('GET', `/api/slots?slot_date=${d}`);
+        if (Array.isArray(data) && data.length) {
+          APP_STATE.slots = data;
+          if (!APP_STATE.slots.some(s => s.id === APP_STATE.selectedSlotId)) {
+            APP_STATE.selectedSlotId = APP_STATE.slots[0].id;
+          }
+          renderStudentCheckout();
+          renderAdminSlotsManage();
+        }
+      } catch (e) {
+        console.warn('loadSlots API fallback:', e.message);
+      }
+    }
+
+    async function loadPaymentConfig() {
+      try {
+        const data = await api('GET', '/api/payments/config');
+        if (data && data.upi_vpa) {
+          APP_STATE.paymentSettings = {
+            upi_vpa: data.upi_vpa,
+            merchant_name: data.merchant_name || 'Smart Canteen Campus',
+            merchant_description: 'Food Order Payment',
+            mode: data.mode || 'DIRECT_UPI',
+            hold_timeout_minutes: data.hold_timeout_minutes || 10
+          };
+          renderAdminUpiSettings();
+        }
+      } catch (e) {
+        console.warn('loadPaymentConfig API fallback:', e.message);
+      }
+    }
+
+    async function loadStudentOrders() {
+      try {
+        const sid = APP_STATE.currentUser?.id;
+        const url = sid ? `/api/orders?student_id=${sid}` : '/api/orders';
+        const data = await api('GET', url);
+        if (Array.isArray(data)) {
+          const orders = data.map(o => {
+            if (!o.token && o.token_number) {
+              o.token = {
+                token_number: o.token_number,
+                opaque_token: o.opaque_token || 'token_' + o.id,
+                token_status: o.order_status === 'CANCELLED' ? 'CANCELLED' : (o.order_status === 'COMPLETED' ? 'REDEEMED' : 'ACTIVE'),
+                redeemed_at: o.completed_at || null
+              };
+            }
+            return o;
+          });
+          APP_STATE.orders = orders;
+          if (orders.length && (!APP_STATE.activeOrderId || !orders.some(o => o.id === APP_STATE.activeOrderId))) {
+            APP_STATE.activeOrderId = orders[0].id;
+          }
+          renderStudentActiveOrderToken();
+          renderStudentProfile();
+        }
+      } catch (e) {
+        console.warn('loadStudentOrders API fallback:', e.message);
+      }
+    }
+
+    async function loadAdminOrders() {
+      try {
+        const data = await api('GET', '/api/admin/orders');
+        if (Array.isArray(data)) {
+          APP_STATE.orders = data.map(o => {
+            if (!o.token && o.token_number) {
+              o.token = {
+                token_number: o.token_number,
+                opaque_token: o.opaque_token || 'token_' + o.id,
+                token_status: o.order_status === 'CANCELLED' ? 'CANCELLED' : (o.order_status === 'COMPLETED' ? 'REDEEMED' : 'ACTIVE'),
+                redeemed_at: o.completed_at || null
+              };
+            }
+            return o;
+          });
+          renderAdminOrderQueue();
+          renderAdminOverview();
+          renderAdminScanner();
+        }
+      } catch (e) {
+        console.warn('loadAdminOrders API fallback:', e.message);
+      }
+    }
+
+    async function loadAdminPayments() {
+      try {
+        const data = await api('GET', '/api/admin/payments');
+        if (Array.isArray(data)) {
+          APP_STATE.payments = data;
+          renderAdminPayments();
+        }
+      } catch (e) {
+        console.warn('loadAdminPayments API fallback:', e.message);
+      }
+    }
+
+    async function loadAdminObservations() {
+      try {
+        const data = await api('GET', '/api/admin/observations');
+        if (Array.isArray(data)) {
+          APP_STATE.observations = data;
+          renderAdminObservations();
+        }
+      } catch (e) {
+        console.warn('loadAdminObservations API fallback:', e.message);
+      }
+    }
+
+    async function loadAdminAuditLogs() {
+      try {
+        const data = await api('GET', '/api/admin/audit-logs');
+        if (Array.isArray(data)) {
+          APP_STATE.auditLogs = data;
+          renderAdminAuditLogs();
+        }
+      } catch (e) {
+        console.warn('loadAdminAuditLogs API fallback:', e.message);
+      }
+    }
+
+    async function loadInitialDataForRole(role) {
+      renderDateChips();
+      await Promise.allSettled([
+        loadMenuItems(),
+        loadSlots(APP_STATE.selectedSlotDate),
+        loadPaymentConfig()
+      ]);
+      if (role === 'admin') {
+        await Promise.allSettled([
+          loadAdminOrders(),
+          loadAdminPayments(),
+          loadAdminObservations(),
+          loadAdminAuditLogs()
+        ]);
+      } else {
+        await loadStudentOrders();
+      }
+    }
+
+// =========================================================================
     // STATE STORE & INITIAL DEMO SEED DATA
     // =========================================================================
     const APP_STATE = {
+      isBackendLive: false,
+      apiToken: null,
+      selectedSlotDate: '2026-10-27',
       workspaceMode: window.location.pathname.startsWith('/admin') ? 'admin' : 'student_login',
       studentTab: 'menu',
       adminTab: 'overview',
@@ -2181,10 +2524,12 @@
       if (mode === 'student_login') {
         if (stuLoginWs) stuLoginWs.classList.remove('hidden');
         if (sessionBar) sessionBar.classList.add('hidden');
+        updateMobileCartBar();
       } else if (mode === 'admin') {
         if (admWs) admWs.classList.remove('hidden');
         if (sessionBar) sessionBar.classList.remove('hidden');
         switchAdminTab(APP_STATE.adminTab || 'overview');
+        updateMobileCartBar();
       } else {
         if (stuWs) stuWs.classList.remove('hidden');
         if (sessionBar) sessionBar.classList.remove('hidden');
@@ -2224,12 +2569,19 @@
       tabs.forEach(t => {
         const sec = document.getElementById(mapSec[t]);
         const btn = document.getElementById(mapBtn[t]);
-        if (t === tab) {
-          sec.classList.remove('hidden');
-          btn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-[#112D4E] text-white shadow-sm';
-        } else {
-          sec.classList.add('hidden');
-          btn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold transition bg-white border border-[#DBE2EF] text-[#112D4E] hover:bg-stone-50';
+        const isCurrent = (t === tab);
+        if (sec) {
+          if (isCurrent) sec.classList.remove('hidden');
+          else sec.classList.add('hidden');
+        }
+        if (btn) {
+          btn.classList.toggle('bg-[#112D4E]', isCurrent);
+          btn.classList.toggle('text-white', isCurrent);
+          btn.classList.toggle('shadow-sm', isCurrent);
+          btn.classList.toggle('bg-white', !isCurrent);
+          btn.classList.toggle('text-[#112D4E]', !isCurrent);
+          btn.classList.toggle('border', !isCurrent);
+          btn.classList.toggle('border-[#DBE2EF]', !isCurrent);
         }
       });
 
@@ -2243,6 +2595,7 @@
       } else if (tab === 'profile') {
         renderStudentProfile();
       }
+      updateMobileCartBar();
     }
 
     function switchAdminTab(tab) {
@@ -2541,19 +2894,24 @@
               </div>
               <div class="flex items-center gap-2">
                 <span class="font-bold mono text-[#112D4E]">₹${e.subtotal_inr.toFixed(2)}</span>
-                <button type="button" onclick="updateCartQty(${e.menu_item_id}, -1)" class="w-5 h-5 rounded border border-[#DBE2EF] text-[#4A607A] hover:text-black">&minus;</button>
-                <button type="button" onclick="updateCartQty(${e.menu_item_id}, 1)" class="w-5 h-5 rounded border border-[#DBE2EF] text-[#4A607A] hover:text-black">+</button>
+                <button type="button" onclick="updateCartQty(${e.menu_item_id}, -1)" class="w-7 h-7 flex items-center justify-center rounded border border-[#DBE2EF] text-[#4A607A] hover:text-black touch-target font-bold text-sm">&minus;</button>
+                <button type="button" onclick="updateCartQty(${e.menu_item_id}, 1)" class="w-7 h-7 flex items-center justify-center rounded border border-[#DBE2EF] text-[#4A607A] hover:text-black touch-target font-bold text-sm">+</button>
               </div>
             </div>
           `;
           }).join('');
         }
       }
-      document.getElementById('cartPrepEstimate').textContent = `${c.maxPrep} min`;
-      document.getElementById('cartWorkloadUnits').textContent = c.workloadUnits.toFixed(2);
-      document.getElementById('cartTotalDisplay').textContent = `₹${c.totalInr.toFixed(2)}`;
+      const prepEl = document.getElementById('cartPrepEstimate');
+      if (prepEl) prepEl.textContent = `${c.maxPrep} min`;
+      const wlEl = document.getElementById('cartWorkloadUnits');
+      if (wlEl) wlEl.textContent = c.workloadUnits.toFixed(2);
+      const totEl = document.getElementById('cartTotalDisplay');
+      if (totEl) totEl.textContent = `₹${c.totalInr.toFixed(2)}`;
       const btn = document.getElementById('proceedToSlotBtn');
       if (btn) btn.disabled = c.entries.length === 0;
+
+      updateMobileCartBar(c);
     }
 
     // =========================================================================
@@ -2599,6 +2957,8 @@
       const c = computeAuthoritativeCart();
       const enrichedSlots = APP_STATE.slots.map(enrichSlot);
 
+      renderDateChips();
+
       // Ensure selectedSlotId is valid
       let chosenSlot = enrichedSlots.find(s => s.id === APP_STATE.selectedSlotId);
       if (chosenSlot && chosenSlot.remaining_capacity <= 0) {
@@ -2610,15 +2970,25 @@
         slotsCont.innerHTML = enrichedSlots.map(s => {
           const isFull = s.remaining_capacity <= 0 || s.status !== 'OPEN';
           const isSelected = chosenSlot && chosenSlot.id === s.id;
-          let badgeClass = 'badge-paid';
-          if (s.availability_state === 'LIMITED') badgeClass = 'badge-unpaid';
-          if (isFull) badgeClass = 'badge-failed';
+          let cardStyle = 'border-emerald-300 bg-emerald-50/50 hover:border-emerald-500';
+          let badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-300';
+          if (s.availability_state === 'LIMITED') {
+            cardStyle = 'border-amber-300 bg-amber-50/50 hover:border-amber-500';
+            badgeClass = 'bg-amber-100 text-amber-800 border-amber-300';
+          }
+          if (isFull) {
+            cardStyle = 'border-red-300 bg-red-50/40 opacity-70 cursor-not-allowed';
+            badgeClass = 'bg-red-100 text-red-800 border-red-300';
+          }
+          if (isSelected) {
+            cardStyle = 'border-[#3F72AF] bg-[#DBE2EF]/60 ring-2 ring-[#3F72AF] shadow-sm';
+          }
 
           return `
-            <div onclick="selectPickupSlot(${s.id})" class="cursor-pointer rounded-xl border-2 p-3.5 transition ${isSelected ? 'border-[#3F72AF] bg-[#DBE2EF]/40' : isFull ? 'border-[#FCA5A5] bg-red-50/30 opacity-85' : 'border-[#DBE2EF] bg-white hover:border-stone-400'}">
+            <div onclick="selectPickupSlot(${s.id})" class="cursor-pointer rounded-xl border-2 p-3 sm:p-3.5 transition min-h-[56px] ${cardStyle}">
               <div class="flex items-center justify-between gap-2 mb-1.5">
                 <span class="text-sm font-bold text-[#112D4E]">${s.label}</span>
-                <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${badgeClass}">${s.availability_state}</span>
+                <span class="text-[10px] sm:text-[11px] font-bold px-2 py-0.5 rounded-full border ${badgeClass}">${s.availability_state}</span>
               </div>
               <div class="grid grid-cols-2 gap-1 text-xs text-[#4A607A]">
                 <div>Remaining: <strong class="mono text-[#112D4E]">${s.remaining_capacity} / ${s.effective_capacity}</strong></div>
@@ -2674,7 +3044,7 @@
       }
     }
 
-    function submitStudentOrder() {
+    async function submitStudentOrder() {
       const c = computeAuthoritativeCart();
       if (!c.entries.length) {
         showToast('Your cart is empty.', 'error');
@@ -2687,7 +3057,52 @@
         return;
       }
 
-      // Decrement stock atomically
+      const isPayAtCanteen = APP_STATE.selectedPaymentMethod === 'PAY_AT_CANTEEN';
+      const notes = (document.getElementById('checkoutOrderNotes')?.value || '').trim();
+
+      // Try live API first
+      try {
+        const orderPayload = {
+          slot_id: slot.id,
+          items: c.entries.map(e => ({
+            item_id: e.menu_item_id,
+            quantity: e.quantity
+          })),
+          payment_method: isPayAtCanteen ? 'PAY_AT_CANTEEN' : 'ONLINE_UPI',
+          notes: notes
+        };
+        const createdOrder = await api('POST', '/api/orders', orderPayload);
+        if (createdOrder && createdOrder.id) {
+          if (!createdOrder.token && createdOrder.token_number) {
+            createdOrder.token = {
+              token_number: createdOrder.token_number,
+              opaque_token: createdOrder.opaque_token || 'token_' + createdOrder.id,
+              token_status: createdOrder.order_status === 'CANCELLED' ? 'CANCELLED' : 'ACTIVE',
+              redeemed_at: null
+            };
+          }
+          APP_STATE.orders.unshift(createdOrder);
+          APP_STATE.activeOrderId = createdOrder.id;
+          APP_STATE.cart = {};
+          renderStudentCart();
+          updateHeaderIdentity();
+
+          if (isPayAtCanteen) {
+            showToast(`Order ${createdOrder.token?.token_number || createdOrder.order_reference} confirmed! Generated UNPAID collection token.`, 'warn');
+            switchStudentTab('token');
+          } else {
+            showToast(`Order ${createdOrder.token?.token_number || createdOrder.order_reference} created! Complete payment to activate your pickup token.`, 'info');
+            switchStudentTab('token');
+            openRazorpayDemoModal(createdOrder.id);
+          }
+          return;
+        }
+      } catch (err) {
+        console.warn('Live order creation failed, executing local fallback:', err.message);
+        showToast(`Backend notice: ${err.message}. Simulating order locally.`, 'warn');
+      }
+
+      // Decrement stock atomically (Local fallback)
       c.entries.forEach(e => {
         const m = APP_STATE.menuItems.find(i => i.id === e.menu_item_id);
         if (m && m.stock_quantity !== null) {
@@ -2700,7 +3115,6 @@
       const opaque = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
       const orderRef = `ORD-20261018-${String(nextId).padStart(4, '0')}`;
       const payRef = `PAY-${String(nextId).padStart(5, '0')}-${Math.floor(1000 + Math.random() * 9000)}`;
-      const isPayAtCanteen = APP_STATE.selectedPaymentMethod === 'PAY_AT_CANTEEN';
       const nowIso = new Date().toISOString();
 
       const upiUri = `upi://pay?pa=${encodeURIComponent(APP_STATE.paymentSettings.upi_vpa)}&pn=${encodeURIComponent(APP_STATE.paymentSettings.merchant_name)}&am=${c.totalInr.toFixed(2)}&cu=INR&tr=${encodeURIComponent(payRef)}&tn=${encodeURIComponent('Order ' + tokenNo)}`;
@@ -2718,7 +3132,7 @@
         total_inr: c.totalInr,
         workload_units: c.workloadUnits,
         estimated_wait_minutes: +((slot.estimated_queue_wait_minutes || 1.5) + c.maxPrep).toFixed(1),
-        notes: (document.getElementById('checkoutOrderNotes')?.value || '').trim(),
+        notes: notes,
         placed_at: nowIso,
         confirmed_at: isPayAtCanteen ? nowIso : null,
         preparing_at: null,
@@ -2775,17 +3189,19 @@
       const el = document.getElementById(containerId);
       if (!el || !textPayload) return;
       el.innerHTML = '';
+      const screenMax = Math.min(200, Math.floor((window.innerWidth || 360) - 80));
+      const qrSize = Math.max(120, Math.min(size, screenMax));
       if (typeof QRCode !== 'undefined') {
         new QRCode(el, {
           text: textPayload,
-          width: size,
-          height: size,
-          colorDark: '#112D4E',
+          width: qrSize,
+          height: qrSize,
+          colorDark: '#0F172A',
           colorLight: '#FFFFFF',
           correctLevel: QRCode.CorrectLevel.M
         });
       } else {
-        el.innerHTML = `<div class="p-3 border mono text-[10px] break-all">${textPayload}</div>`;
+        el.innerHTML = `<p class="text-xs text-stone-500">QR Code library loading...</p>`;
       }
     }
 
@@ -2964,12 +3380,22 @@
       }
     }
 
-    function studentSubmitUtr(orderId) {
+    async function studentSubmitUtr(orderId) {
       const utr = (document.getElementById('stuUtrInput')?.value || '').trim();
       if (utr.length < 6) {
         showToast('Please enter a valid UTR / transaction reference (at least 6 characters).', 'error');
         return;
       }
+      try {
+        await api('POST', `/api/payments/${orderId}/submit-utr`, { utr_number: utr.toUpperCase() });
+        showToast(`UTR ${utr.toUpperCase()} recorded in backend for reconciliation. Status remains PENDING until Admin verifies bank receipt.`, 'info');
+        await loadStudentOrders();
+        renderStudentActiveOrderToken();
+        return;
+      } catch (err) {
+        console.warn('Backend UTR submit failed, using local update:', err.message);
+      }
+
       const order = APP_STATE.orders.find(o => o.id === orderId);
       if (!order || !order.payment) return;
       order.payment.submitted_utr = utr.toUpperCase();
@@ -3227,78 +3653,120 @@
       }).join('');
     }
 
-    function adminAdvanceOrder(orderId, nextStatus) {
+    async function adminAdvanceOrder(orderId, nextStatus) {
       const order = APP_STATE.orders.find(o => o.id === orderId);
       if (!order) return;
       if (nextStatus === 'COMPLETED' && order.payment_status !== 'PAID') {
         showToast('Cannot complete handover while order is UNPAID or PENDING. Record payment first.', 'error');
         return;
       }
+      try {
+        await api('POST', `/api/admin/orders/${orderId}/status`, { new_status: nextStatus });
+        showToast(`Order ${order.token?.token_number || order.order_reference} transitioned to ${nextStatus}.`, 'success');
+        await loadAdminOrders();
+        updateAdminSidebarBadges();
+        return;
+      } catch (err) {
+        console.warn('Backend status transition failed, using local update:', err.message);
+      }
+
       const prev = order.order_status;
       order.order_status = nextStatus;
-      if (nextStatus === 'CANCELLED') {
+      if (nextStatus === 'CANCELLED' && order.token) {
         order.token.token_status = 'CANCELLED';
       }
       addAuditLog('ORDER_STATUS_CHANGED', 'order', order.order_reference, { from: prev, to: nextStatus });
-      showToast(`Order ${order.token.token_number} transitioned from ${prev} to ${nextStatus}.`, 'success');
+      showToast(`Order ${order.token?.token_number || order.order_reference} transitioned from ${prev} to ${nextStatus}.`, 'success');
       renderAdminOrderQueue();
       updateAdminSidebarBadges();
     }
 
-    function adminCollectCounterPayment(orderId, mode) {
+    async function adminCollectCounterPayment(orderId, mode) {
       const order = APP_STATE.orders.find(o => o.id === orderId);
       if (!order) return;
+      const m = mode || 'CASH';
+      const tendered = Math.round((order.total_inr || (order.total_paise ? order.total_paise / 100 : 0)) * 100);
+
+      try {
+        await api('POST', `/api/admin/orders/${orderId}/counter-payment`, {
+          cash_tendered_paise: tendered,
+          payment_mode: m === 'CASH' ? 'PAY_AT_CANTEEN_CASH' : 'PAY_AT_CANTEEN_UPI'
+        });
+        showToast(`Recorded payment at counter via ${m}! Token upgraded to PAID.`, 'success');
+        await Promise.allSettled([loadAdminOrders(), loadAdminPayments()]);
+        updateAdminSidebarBadges();
+        return;
+      } catch (err) {
+        console.warn('Backend counter payment failed, using local update:', err.message);
+      }
+
       order.payment_status = 'PAID';
       if (order.order_status === 'PLACED') order.order_status = 'CONFIRMED';
       if (order.payment) {
         order.payment.payment_status = 'PAID';
-        order.payment.payment_method = mode === 'CASH' ? 'PAY_AT_CANTEEN_CASH' : 'PAY_AT_CANTEEN_UPI';
+        order.payment.payment_method = m === 'CASH' ? 'PAY_AT_CANTEEN_CASH' : 'PAY_AT_CANTEEN_UPI';
         order.payment.verified_amount_inr = order.total_inr;
         order.payment.verification_method = 'COUNTER_COLLECTION';
         order.payment.verified_at = new Date().toISOString();
-        order.payment.reconciliation_notes = `Collected at counter via ${mode}`;
+        order.payment.reconciliation_notes = `Collected at counter via ${m}`;
       }
       addAuditLog('COUNTER_PAYMENT_RECORDED', 'order', order.order_reference, {
-        token_number: order.token.token_number,
-        opaque_token_preserved: order.token.opaque_token,
-        collection_mode: mode,
+        token_number: order.token?.token_number,
+        collection_mode: m,
         amount_inr: order.total_inr
       });
-      showToast(`Recorded ₹${order.total_inr.toFixed(2)} ${mode} at counter! Token ${order.token.token_number} upgraded from UNPAID to PAID without changing its QR code.`, 'success');
+      showToast(`Recorded ₹${order.total_inr.toFixed(2)} ${m} at counter! Token ${order.token?.token_number} upgraded to PAID without changing QR code.`, 'success');
       renderAdminOrderQueue();
       renderAdminPayments();
       updateAdminSidebarBadges();
     }
 
-    function adminReconcileOrderPayment(orderId, action) {
+    async function adminReconcileOrderPayment(orderId, action) {
       const order = APP_STATE.orders.find(o => o.id === orderId);
-      if (!order || !order.payment) return;
+      if (!order) return;
+      const payId = order.payment?.id || order.id;
+
+      try {
+        const backendAction = (action === 'VERIFY_PAID') ? 'APPROVE' : 'REJECT';
+        await api('POST', `/api/admin/payments/${payId}/reconcile`, {
+          action: backendAction,
+          bank_reference: order.payment?.submitted_utr || 'ADMIN-APPROVED',
+          notes: `Reconciled by ${APP_STATE.currentUser?.full_name || 'Admin'}`
+        });
+        showToast(`Payment ${backendAction === 'APPROVE' ? 'APPROVED' : 'REJECTED'} in backend!`, 'success');
+        await Promise.allSettled([loadAdminOrders(), loadAdminPayments()]);
+        return;
+      } catch (err) {
+        console.warn('Backend payment reconciliation failed, using local update:', err.message);
+      }
+
       const now = new Date().toISOString();
       if (action === 'VERIFY_PAID') {
         order.payment_status = 'PAID';
         if (order.order_status === 'PLACED') order.order_status = 'CONFIRMED';
-        order.payment.payment_status = 'PAID';
-        order.payment.verified_amount_inr = order.total_inr;
-        order.payment.verification_method = 'MANUAL_ADMIN_RECONCILIATION';
-        order.payment.verified_at = now;
-        order.payment.reconciliation_notes = `Verified by ${APP_STATE.currentUser.full_name} against bank statement (UTR: ${order.payment.submitted_utr || 'BANK-VERIFIED'}).`;
-        addAuditLog('PAYMENT_RECONCILED_PAID', 'payment', order.payment.payment_reference, {
+        if (order.payment) {
+          order.payment.payment_status = 'PAID';
+          order.payment.verified_amount_inr = order.total_inr;
+          order.payment.verification_method = 'MANUAL_ADMIN_RECONCILIATION';
+          order.payment.verified_at = now;
+          order.payment.reconciliation_notes = `Verified against bank statement (UTR: ${order.payment.submitted_utr || 'BANK-VERIFIED'}).`;
+        }
+        addAuditLog('PAYMENT_RECONCILED_PAID', 'payment', order.payment?.payment_reference || `PAY-${order.id}`, {
           order_id: order.id,
-          utr: order.payment.submitted_utr,
+          utr: order.payment?.submitted_utr,
           amount_inr: order.total_inr
         });
-        showToast(`Reconciled payment ${order.payment.payment_reference} as PAID. Token ${order.token.token_number} is now an active PAID token!`, 'success');
+        showToast(`Reconciled payment as PAID. Token ${order.token?.token_number} is now an active PAID token!`, 'success');
       } else if (action === 'MARK_FAILED') {
         order.payment_status = 'FAILED';
         order.order_status = 'CANCELLED';
-        order.token.token_status = 'CANCELLED';
-        order.payment.payment_status = 'FAILED';
-        addAuditLog('PAYMENT_MARKED_FAILED', 'payment', order.payment.payment_reference, { order_id: order.id });
-        showToast(`Marked payment ${order.payment.payment_reference} as FAILED and released slot capacity.`, 'warn');
+        if (order.token) order.token.token_status = 'CANCELLED';
+        if (order.payment) order.payment.payment_status = 'FAILED';
+        addAuditLog('PAYMENT_MARKED_FAILED', 'payment', order.payment?.payment_reference || `PAY-${order.id}`, { order_id: order.id });
+        showToast(`Marked payment as FAILED and released slot capacity.`, 'warn');
       }
       renderAdminPayments();
       renderAdminOrderQueue();
-      updateAdminSidebarBadges();
     }
 
     function renderAdminPayments() {
@@ -3621,7 +4089,7 @@
       `;
     }
 
-    function redeemScannedToken() {
+    async function redeemScannedToken() {
       const raw = (document.getElementById('scannerTokenInput')?.value || '').trim();
       if (raw.toLowerCase().startsWith('upi://')) {
         addAuditLog('TOKEN_REDEMPTION_REJECTED', 'token', 'PAYMENT_QR_SCANNED', { reason: 'Scanned upi:// payment QR instead of Order Token QR' });
@@ -3629,6 +4097,28 @@
         showToast('Rejected: Cannot redeem a UPI Payment Initiation QR as an Order Collection Token!', 'error');
         return;
       }
+
+      try {
+        const res = await api('POST', '/api/admin/tokens/redeem', {
+          token_str: raw,
+          force_pickup: false
+        });
+        if (res && res.success) {
+          showToast(`Token REDEEMED in backend! Order ${res.order_reference || raw} completed.`, 'success');
+          await loadAdminOrders();
+          inspectTokenForRedemption();
+          return;
+        }
+      } catch (err) {
+        console.warn('Backend token redeem failed, checking local logic:', err.message);
+        if (APP_STATE.isBackendLive) {
+          showToast(`Backend rejected redemption: ${err.message}`, 'error');
+          inspectTokenForRedemption();
+          return;
+        }
+      }
+
+      // Local fallback redemption
       const order = findOrderByTokenInput(raw);
       if (!order) {
         addAuditLog('TOKEN_REDEMPTION_REJECTED', 'token', raw.slice(0, 24), { reason: 'TOKEN_NOT_FOUND' });
@@ -3636,36 +4126,36 @@
         showToast('Rejected: Collection token does not exist.', 'error');
         return;
       }
-      if (order.token.token_status === 'REDEEMED') {
+      if (order.token && order.token.token_status === 'REDEEMED') {
         addAuditLog('TOKEN_REDEMPTION_REJECTED', 'token', order.token.token_number, { reason: 'DUPLICATE_REDEMPTION_ATTEMPT', redeemed_at: order.token.redeemed_at });
         inspectTokenForRedemption();
         showToast(`Rejected Duplicate Redemption: Token ${order.token.token_number} was already redeemed!`, 'error');
         return;
       }
-      if (order.token.token_status !== 'ACTIVE' || order.order_status === 'CANCELLED') {
-        addAuditLog('TOKEN_REDEMPTION_REJECTED', 'token', order.token.token_number, { reason: `STATUS_${order.token.token_status}` });
+      if ((order.token && order.token.token_status !== 'ACTIVE') || order.order_status === 'CANCELLED') {
+        addAuditLog('TOKEN_REDEMPTION_REJECTED', 'token', order.token?.token_number, { reason: `STATUS_${order.token?.token_status}` });
         inspectTokenForRedemption();
-        showToast(`Rejected: Token ${order.token.token_number} is ${order.token.token_status}.`, 'error');
+        showToast(`Rejected: Token is ${order.token?.token_status || order.order_status}.`, 'error');
         return;
       }
       if (order.payment_status !== 'PAID') {
-        addAuditLog('TOKEN_REDEMPTION_REJECTED', 'token', order.token.token_number, { reason: `PAYMENT_${order.payment_status}` });
+        addAuditLog('TOKEN_REDEMPTION_REJECTED', 'token', order.token?.token_number, { reason: `PAYMENT_${order.payment_status}` });
         inspectTokenForRedemption();
-        showToast(`Blocked: Order ${order.token.token_number} is ${order.payment_status}. Collect counter payment or verify UPI receipt first!`, 'warn');
+        showToast(`Blocked: Order ${order.token?.token_number} is ${order.payment_status}. Collect counter payment or verify UPI receipt first!`, 'warn');
         return;
       }
 
-      // Atomic redemption
       const now = new Date().toISOString();
-      order.token.token_status = 'REDEEMED';
-      order.token.redeemed_at = now;
+      if (order.token) {
+        order.token.token_status = 'REDEEMED';
+        order.token.redeemed_at = now;
+      }
       order.order_status = 'COMPLETED';
       order.completed_at = now;
-      addAuditLog('TOKEN_REDEEMED', 'token', order.token.token_number, { order_id: order.id, redeemed_at: now });
+      addAuditLog('TOKEN_REDEEMED', 'token', order.token?.token_number || order.order_reference, { order_id: order.id, redeemed_at: now });
       inspectTokenForRedemption();
-      renderAdminScanner();
-      updateAdminSidebarBadges();
-      showToast(`Token ${order.token.token_number} redeemed! Order handed over and marked COMPLETED.`, 'success');
+      renderAdminOrderQueue();
+      showToast(`Token ${order.token?.token_number} REDEEMED! Order handed over.`, 'success');
     }
 
     // =========================================================================
@@ -3709,9 +4199,18 @@
       showToast(`Updated ${s.label} counters to c=${s.allocated_counters}.`, 'info');
     }
 
-    function toggleSlotOpen(slotId) {
+    async function toggleSlotOpen(slotId) {
       const s = APP_STATE.slots.find(x => x.id === slotId);
       if (!s) return;
+      const nextActive = (s.status !== 'OPEN');
+      try {
+        await api('PUT', `/api/admin/slots/${slotId}`, { is_active: nextActive });
+        await loadSlots(APP_STATE.selectedSlotDate);
+        showToast(`Slot ${s.label} set to ${nextActive ? 'OPEN' : 'CLOSED'} in backend.`, 'info');
+        return;
+      } catch (err) {
+        console.warn('Backend slot toggle failed, using local update:', err.message);
+      }
       s.status = s.status === 'OPEN' ? 'CLOSED' : 'OPEN';
       addAuditLog('SLOT_STATUS_CHANGED', 'pickup_slot', slotId, { label: s.label, status: s.status });
       renderAdminSlotsManage();
@@ -3801,9 +4300,20 @@
       }).join('');
     }
 
-    function toggleMenuItemAvailability(itemId) {
+    async function toggleMenuItemAvailability(itemId) {
       const item = APP_STATE.menuItems.find(i => i.id === itemId);
       if (!item) return;
+      const nextAvail = !item.is_available;
+      try {
+        await api('PUT', `/api/admin/menu/${itemId}`, { is_available: nextAvail });
+        item.is_available = nextAvail;
+        renderAdminMenuManage();
+        renderStudentMenu();
+        showToast(`${item.name} availability set to ${nextAvail} in backend.`, 'info');
+        return;
+      } catch (err) {
+        console.warn('Backend menu toggle failed, using local update:', err.message);
+      }
       item.is_available = !item.is_available;
       renderAdminMenuManage();
       showToast(`${item.name} availability set to ${item.is_available}.`, 'info');
@@ -3859,7 +4369,7 @@
       document.getElementById('cfgSafetyFactor').value = s.default_safety_factor;
     }
 
-    function saveAdminUpiSettings() {
+    async function saveAdminUpiSettings() {
       const vpa = (document.getElementById('cfgUpiVpa')?.value || '').trim();
       const vpaRegex = /^[a-zA-Z0-9._\-]{2,256}@[a-zA-Z]{2,64}$/;
       if (!vpaRegex.test(vpa)) {
@@ -3874,12 +4384,25 @@
       APP_STATE.paymentSettings.default_reservation_timeout_minutes = Number(document.getElementById('cfgHoldTimeout')?.value || 10);
       APP_STATE.paymentSettings.default_safety_factor = Number(document.getElementById('cfgSafetyFactor')?.value || 0.85);
 
+      try {
+        await api('PUT', '/api/admin/settings/payments', {
+          upi_vpa: vpa,
+          merchant_name: APP_STATE.paymentSettings.merchant_name,
+          configured_payment_mode: APP_STATE.paymentSettings.configured_payment_mode,
+          default_reservation_timeout_minutes: APP_STATE.paymentSettings.default_reservation_timeout_minutes,
+          default_safety_factor: APP_STATE.paymentSettings.default_safety_factor
+        });
+        showToast(`Saved UPI settings to backend!`, 'success');
+      } catch (err) {
+        console.warn('Backend UPI settings update failed, using local update:', err.message);
+        showToast(`Saved receiving UPI VPA (${vpa}) locally.`, 'success');
+      }
+
       addAuditLog('UPI_SETTINGS_UPDATED', 'application_settings', 'payments', {
         old_vpa: oldVpa,
         new_vpa: vpa,
         merchant_name: APP_STATE.paymentSettings.merchant_name
       });
-      showToast(`Saved receiving UPI VPA (${vpa}) and logged change in audit trail.`, 'success');
     }
 
     // =========================================================================
@@ -3946,7 +4469,7 @@
       }
     }
 
-    function adminAddObservation() {
+    async function adminAddObservation() {
       const slot = (document.getElementById('newObsSlot')?.value || '12:00–12:15 PM').trim();
       const dur = Number(document.getElementById('newObsDur')?.value || 15);
       const arr = Number(document.getElementById('newObsArr')?.value || 18);
@@ -3956,9 +4479,28 @@
         showToast('Invalid observation values.', 'error');
         return;
       }
+
+      try {
+        await api('POST', '/api/admin/observations', {
+          observation_date: APP_STATE.selectedSlotDate || '2026-10-27',
+          slot_label: slot,
+          duration_minutes: dur,
+          arrivals_count: arr,
+          served_count: srv,
+          mean_service_time_minutes: mst,
+          active_counters: 2,
+          notes: 'Recorded via Admin Observation Console'
+        });
+        showToast(`Added observation for ${slot} in backend.`, 'success');
+        await loadAdminObservations();
+        return;
+      } catch (err) {
+        console.warn('Backend observation create failed, using local update:', err.message);
+      }
+
       APP_STATE.observations.unshift({
         id: APP_STATE.observations.length + 1,
-        observation_date: '2026-10-18',
+        observation_date: '2026-10-27',
         slot_label: slot,
         start_time: '12:00',
         end_time: '12:15',
@@ -4535,14 +5077,51 @@
       }
     }
 
-    function handlePortalLoginSubmit() {
+    async function handlePortalLoginSubmit() {
+      const emailInput = (document.getElementById('portalLoginIdentifier')?.value || '').trim();
+      const passInput = (document.getElementById('portalLoginPassword')?.value || '').trim();
+
+      let email = emailInput;
+      let password = passInput || 'StudentPass#2026';
+      if (selectedPortalLoginRole === 'admin') {
+        if (!email) email = 'admin@smartcanteen.edu.in';
+        if (!passInput) password = 'AdminPass#2026';
+      } else if (selectedPortalLoginRole === 'staff') {
+        if (!email) email = 'meera.nair@cet.ac.in';
+        if (!passInput) password = 'StaffPass#2026';
+      } else {
+        if (!email) email = 'ananya@cet.ac.in';
+      }
+
+      try {
+        const res = await api('POST', '/api/auth/login', { email, password });
+        if (res && res.user) {
+          APP_STATE.currentUser = res.user;
+          APP_STATE.apiToken = res.access_token || res.token || null;
+          localStorage.setItem('sc_persisted_session_v3', JSON.stringify({
+            token: APP_STATE.apiToken,
+            user: res.user,
+            role: res.user.role
+          }));
+          const role = (res.user.role === 'admin') ? 'admin' : 'student';
+          switchWorkspaceMode(role);
+          await loadInitialDataForRole(role);
+          showToast(`Signed in as ${res.user.full_name} (${res.user.role.toUpperCase()}).`, 'success');
+          return;
+        }
+      } catch (err) {
+        console.warn('Backend login failed, using fallback:', err.message);
+        showToast(`Backend login notice: ${err.message}. Falling back to demo mode.`, 'warn');
+      }
+
+      // Offline / fallback login
       if (selectedPortalLoginRole === 'admin') {
         APP_STATE.currentUser = APP_STATE.users[0];
         switchWorkspaceMode('admin');
-        showToast('Signed in as Canteen Admin: Prof. R. Krishnan.', 'success');
+        showToast('Signed in as Canteen Admin: Prof. R. Krishnan (Demo).', 'success');
         return;
       }
-      const ident = (document.getElementById('portalLoginIdentifier')?.value || '').trim().toLowerCase();
+      const ident = email.toLowerCase();
       const found = APP_STATE.users.find(u => u.email.toLowerCase() === ident || (u.registration_number || '').toLowerCase() === ident);
       if (found && found.role !== 'admin') {
         APP_STATE.currentUser = found;
@@ -4553,7 +5132,7 @@
       showToast(`Signed in as ${APP_STATE.currentUser.full_name} (${APP_STATE.currentUser.role.toUpperCase()}).`, 'success');
     }
 
-    function registerFromPortalPage() {
+    async function registerFromPortalPage() {
       const name = (document.getElementById('pageRegFullName')?.value || '').trim();
       const regNo = (document.getElementById('pageRegNumber')?.value || '').trim().toUpperCase();
       const email = (document.getElementById('pageRegEmail')?.value || '').trim().toLowerCase();
@@ -4564,10 +5143,37 @@
         showToast('Please fill Name, Student/Staff ID, Email, and Mobile Number.', 'error');
         return;
       }
-      if (APP_STATE.users.some(u => u.email === email || u.registration_number === regNo)) {
-        showToast('Account with that Email or ID already exists.', 'error');
-        return;
+
+      try {
+        const payload = {
+          email,
+          password: 'StudentPass#2026',
+          full_name: name,
+          roll_number: regNo,
+          phone,
+          academic_year: yr || (selectedPortalRegRole === 'staff' ? 'Faculty / Staff' : 'B.Tech'),
+          division: dept || 'Campus Department'
+        };
+        const res = await api('POST', '/api/auth/register', payload);
+        if (res && res.user) {
+          APP_STATE.currentUser = res.user;
+          APP_STATE.apiToken = res.access_token || res.token || null;
+          localStorage.setItem('sc_persisted_session_v3', JSON.stringify({
+            token: APP_STATE.apiToken,
+            user: res.user,
+            role: res.user.role
+          }));
+          switchWorkspaceMode('student');
+          await loadInitialDataForRole('student');
+          showToast(`Registered & signed in as ${name}!`, 'success');
+          return;
+        }
+      } catch (err) {
+        console.warn('Backend registration failed, fallback to local:', err.message);
+        showToast(`API notice: ${err.message}. Creating demo user locally.`, 'warn');
       }
+
+      // Offline fallback
       const newUser = {
         id: APP_STATE.users.length + 1,
         full_name: name,
@@ -4576,7 +5182,7 @@
         phone,
         department: dept || 'Campus Department',
         academic_year: yr || (selectedPortalRegRole === 'staff' ? 'Faculty / Staff' : 'B.Tech'),
-        role: selectedPortalRegRole,
+        role: 'student',
         campus_member_type: selectedPortalRegRole === 'staff' ? 'COLLEGE_STAFF' : 'STUDENT',
         created_at: new Date().toISOString()
       };
@@ -4586,11 +5192,33 @@
       showToast(`Registered & signed in as ${name} (${selectedPortalRegRole.toUpperCase()}).`, 'success');
     }
 
-    function loginAsAdminFromPage(targetTab) {
+    async function loginAsAdminFromPage(targetTab) {
+      try {
+        const res = await api('POST', '/api/auth/login', {
+          email: 'admin@smartcanteen.edu.in',
+          password: 'AdminPass#2026'
+        });
+        if (res && res.user) {
+          APP_STATE.currentUser = res.user;
+          APP_STATE.apiToken = res.access_token || res.token || null;
+          localStorage.setItem('sc_persisted_session_v3', JSON.stringify({
+            token: APP_STATE.apiToken,
+            user: res.user,
+            role: 'admin'
+          }));
+          APP_STATE.adminTab = targetTab || 'overview';
+          switchWorkspaceMode('admin');
+          await loadInitialDataForRole('admin');
+          showToast('Signed in to Canteen Admin Console as Prof. R. Krishnan.', 'success');
+          return;
+        }
+      } catch (err) {
+        console.warn('Admin API login failed, falling back:', err.message);
+      }
       APP_STATE.currentUser = APP_STATE.users[0];
       APP_STATE.adminTab = targetTab || 'overview';
       switchWorkspaceMode('admin');
-      showToast('Signed in to Canteen Admin Console as Prof. R. Krishnan.', 'success');
+      showToast('Signed in to Canteen Admin Console as Prof. R. Krishnan (Demo).', 'success');
     }
 
     function openRazorpayDemoModal(orderId) {
@@ -4626,16 +5254,32 @@
       });
     }
 
-    function completeRazorpayDemoPayment(isSuccess) {
+    async function completeRazorpayDemoPayment(isSuccess) {
       const order = APP_STATE.orders.find(o => o.id === activeRzpOrderId);
       closeRazorpayDemoModal();
       if (!order) return;
       if (!isSuccess) {
-        showToast(`Razorpay demo payment was not completed. Order ${order.token.token_number} remains PENDING (never falsely marked PAID).`, 'warn');
+        showToast(`Razorpay demo payment was not completed. Order ${order.token?.token_number || order.id} remains PENDING (never falsely marked PAID).`, 'warn');
         renderStudentActiveOrderToken();
         return;
       }
+
       const rzpPayId = 'pay_RzpDemo' + Math.floor(100000 + Math.random() * 900000);
+      try {
+        await api('POST', '/api/payments/gateway/callback', {
+          order_id: order.id,
+          razorpay_payment_id: rzpPayId,
+          razorpay_order_id: `rzp_order_${order.id}`,
+          razorpay_signature: `sig_demo_${rzpPayId}`
+        });
+        showToast(`Razorpay payment ${rzpPayId} verified by backend!`, 'success');
+        await loadStudentOrders();
+        return;
+      } catch (err) {
+        console.warn('Razorpay backend callback failed, using local update:', err.message);
+      }
+
+      // Local fallback
       const now = new Date().toISOString();
       order.payment_status = 'PAID';
       if (order.order_status === 'PLACED') order.order_status = 'CONFIRMED';
@@ -4650,37 +5294,62 @@
       }
       addAuditLog('RAZORPAY_DEMO_PAYMENT_VERIFIED', 'payment', rzpPayId, {
         order_id: order.id,
-        token_number: order.token.token_number,
+        token_number: order.token?.token_number,
         amount_inr: order.total_inr,
         instrument: activeRzpInstrument
       });
       renderStudentActiveOrderToken();
       updateAdminSidebarBadges();
-      showToast(`Razorpay Demo Payment ${rzpPayId} Verified! Order ${order.token.token_number} is now PAID.`, 'success');
+      showToast(`Razorpay Demo Payment ${rzpPayId} Verified! Order ${order.token?.token_number} is now PAID.`, 'success');
     }
 
-    function quickSwitchUser(key) {
+    async function quickSwitchUser(key) {
+      closeAuthModal();
+      let creds = { email: 'ananya@cet.ac.in', pass: 'StudentPass#2026', role: 'student', localIdx: 1 };
       if (key === 'admin') {
-        APP_STATE.currentUser = APP_STATE.users[0];
-        closeAuthModal();
-        switchWorkspaceMode('admin');
-        showToast('Signed in as Administrator: Prof. R. Krishnan', 'success');
+        creds = { email: 'admin@smartcanteen.edu.in', pass: 'AdminPass#2026', role: 'admin', localIdx: 0 };
       } else if (key === 'staff1') {
-        APP_STATE.currentUser = APP_STATE.users[3];
-        closeAuthModal();
-        switchWorkspaceMode('student');
-        showToast('Signed in as College Staff: Dr. Meera Nair (STAFF-EC-104)', 'success');
+        creds = { email: 'meera.nair@cet.ac.in', pass: 'StaffPass#2026', role: 'student', localIdx: 3 };
       } else if (key === 'student2') {
-        APP_STATE.currentUser = APP_STATE.users[2];
-        closeAuthModal();
-        switchWorkspaceMode('student');
-        showToast('Signed in as Student: Rahul Menon (CET2026ME019)', 'success');
-      } else {
-        APP_STATE.currentUser = APP_STATE.users[1];
-        closeAuthModal();
-        switchWorkspaceMode('student');
-        showToast('Signed in as Student: Ananya Nair (CET2026CS041)', 'success');
+        creds = { email: 'rahul@cet.ac.in', pass: 'StudentPass#2026', role: 'student', localIdx: 2 };
       }
+
+      try {
+        const res = await api('POST', '/api/auth/login', { email: creds.email, password: creds.pass });
+        if (res && res.user) {
+          APP_STATE.currentUser = res.user;
+          APP_STATE.apiToken = res.access_token || res.token || null;
+          localStorage.setItem('sc_persisted_session_v3', JSON.stringify({
+            token: APP_STATE.apiToken,
+            user: res.user,
+            role: creds.role
+          }));
+          switchWorkspaceMode(creds.role);
+          await loadInitialDataForRole(creds.role);
+          showToast(`Signed in as ${res.user.full_name} (${res.user.role.toUpperCase()}).`, 'success');
+          return;
+        }
+      } catch (e) {
+        console.warn('Quick switch login via API failed, fallback to local state:', e.message);
+      }
+
+      // Offline fallback
+      APP_STATE.currentUser = APP_STATE.users[creds.localIdx];
+      switchWorkspaceMode(creds.role);
+      showToast(`Signed in as ${APP_STATE.currentUser.full_name} (Offline Demo).`, 'info');
+    }
+
+    async function handleLogout() {
+      try {
+        await api('POST', '/api/auth/logout');
+      } catch (e) {
+        console.warn('Logout API failed or offline:', e.message);
+      }
+      localStorage.removeItem('sc_persisted_session_v3');
+      APP_STATE.apiToken = null;
+      APP_STATE.currentUser = null;
+      switchWorkspaceMode('student_login');
+      showToast('Logged out successfully.', 'info');
     }
 
     function registerNewStudent() {
@@ -4762,8 +5431,42 @@
       showToast('Refreshed live canteen metrics and slot capacity.', 'info');
     }
 
-    window.onload = function () {
-      switchWorkspaceMode(APP_STATE.workspaceMode);
+    window.onload = async function () {
+      renderDateChips();
+      let restored = false;
+      const saved = localStorage.getItem('sc_persisted_session_v3');
+      if (saved) {
+        try {
+          const sess = JSON.parse(saved);
+          if (sess && sess.token) {
+            APP_STATE.apiToken = sess.token;
+          }
+          const me = await api('GET', '/api/auth/me');
+          if (me && me.id) {
+            APP_STATE.currentUser = me;
+            setConnectionMode(true);
+            const role = (me.role === 'admin') ? 'admin' : 'student';
+            switchWorkspaceMode(role);
+            await loadInitialDataForRole(role);
+            restored = true;
+            showToast(`Welcome back, ${me.full_name}!`, 'info');
+          }
+        } catch (e) {
+          console.warn('Session resume failed:', e.message);
+          localStorage.removeItem('sc_persisted_session_v3');
+          APP_STATE.apiToken = null;
+        }
+      }
+
+      if (!restored) {
+        try {
+          await api('GET', '/api/health');
+          setConnectionMode(true);
+        } catch (e) {
+          setConnectionMode(false);
+        }
+        switchWorkspaceMode(APP_STATE.workspaceMode);
+      }
     };
   </script>
 </body>
