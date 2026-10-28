@@ -104,6 +104,7 @@ app.add_middleware(
 def on_startup() -> None:
     init_db()
     seed_default_users()
+    seed_default_slots()
 
 
 def seed_default_users() -> None:
@@ -136,6 +137,38 @@ def seed_default_users() -> None:
                 print("✅ Default users seeded on startup")
     except Exception as e:
         print(f"⚠️ Seed check skipped: {e}")
+
+
+def seed_default_slots() -> None:
+    """Seed default pickup slots for the next 7 days if empty."""
+    from backend.database import get_database_path
+    import sqlite3
+    from datetime import datetime, timedelta, timezone
+
+    db_path = get_database_path()
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.execute("SELECT COUNT(*) FROM pickup_slots")
+            if cursor.fetchone()[0] == 0:
+                now = datetime.now(timezone.utc)
+                for day in range(7):
+                    slot_date = (now + timedelta(days=day)).strftime('%Y-%m-%d')
+                    # 4 slots per day: 10:00-10:15, 12:00-12:15, 14:00-14:15, 16:00-16:15
+                    slots = [
+                        (slot_date, '10:00-10:15 AM', '10:00', '10:15', 10, 2),
+                        (slot_date, '12:00-12:15 PM', '12:00', '12:15', 15, 3),
+                        (slot_date, '14:00-14:15 PM', '14:00', '14:15', 10, 2),
+                        (slot_date, '16:00-16:15 PM', '16:00', '16:15', 8, 2),
+                    ]
+                    for sd, label, st, et, cap, counters in slots:
+                        conn.execute("""
+                            INSERT INTO pickup_slots (slot_date, label, start_time, end_time, capacity, active_counters, status, workload_units, created_at, updated_at)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """, (sd, label, st, et, cap, counters, 'OPEN', 1.0, utcnow_iso(), utcnow_iso()))
+                conn.commit()
+                print("✅ Default pickup slots seeded on startup")
+    except Exception as e:
+        print(f"⚠️ Slot seed check skipped: {e}")
 
 
 @app.get("/api/health", tags=["Health"])
