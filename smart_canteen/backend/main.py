@@ -154,17 +154,18 @@ def seed_default_slots() -> None:
                 for day in range(7):
                     slot_date = (now + timedelta(days=day)).strftime('%Y-%m-%d')
                     # 4 slots per day: 10:00-10:15, 12:00-12:15, 14:00-14:15, 16:00-16:15
+                    # duration_minutes = 15 for all
                     slots = [
-                        (slot_date, '10:00-10:15 AM', '10:00', '10:15', 10, 2),
-                        (slot_date, '12:00-12:15 PM', '12:00', '12:15', 15, 3),
-                        (slot_date, '14:00-14:15 PM', '14:00', '14:15', 10, 2),
-                        (slot_date, '16:00-16:15 PM', '16:00', '16:15', 8, 2),
+                        (slot_date, '10:00-10:15 AM', '10:00', '10:15', 15, 10, 2),
+                        (slot_date, '12:00-12:15 PM', '12:00', '12:15', 15, 15, 3),
+                        (slot_date, '14:00-14:15 PM', '14:00', '14:15', 15, 10, 2),
+                        (slot_date, '16:00-16:15 PM', '16:00', '16:15', 15, 8, 2),
                     ]
-                    for sd, label, st, et, cap, counters in slots:
+                    for sd, label, st, et, dur, cap, counters in slots:
                         conn.execute("""
-                            INSERT INTO pickup_slots (slot_date, label, start_time, end_time, capacity, active_counters, status, workload_units, created_at, updated_at)
+                            INSERT INTO pickup_slots (slot_date, label, start_time, end_time, duration_minutes, admin_cap, allocated_counters, status, created_at, updated_at)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """, (sd, label, st, et, cap, counters, 'OPEN', 1.0, utcnow_iso(), utcnow_iso()))
+                        """, (sd, label, st, et, dur, cap, counters, 'OPEN', utcnow_iso(), utcnow_iso()))
                 conn.commit()
                 print("✅ Default pickup slots seeded on startup")
     except Exception as e:
