@@ -485,6 +485,11 @@
               <input id="pageRegYear" type="text" placeholder="S5 B.Tech / Faculty"
                 class="w-full px-2.5 py-1.5 rounded-lg border border-[#DBE2EF] bg-[#F9F7F7]" />
             </div>
+            <div class="sm:col-span-2">
+              <label class="block font-semibold text-[#112D4E] mb-1">Password (min 8 chars) *</label>
+              <input id="pageRegPassword" type="password" placeholder="Enter your password"
+                class="w-full px-2.5 py-1.5 rounded-lg border border-[#DBE2EF] bg-[#F9F7F7]" />
+            </div>
           </div>
           <button type="button" onclick="registerFromPortalPage()"
             class="w-full py-2.5 px-4 rounded-lg font-bold text-xs btn-primary">
@@ -1628,7 +1633,7 @@
           </div>
           <div>
             <label class="block font-medium mb-1">Password (min 8 chars) *</label>
-            <input id="regPassword" type="password" value="StudentPass#2026"
+            <input id="regPassword" type="password" placeholder="Enter your password"
               class="w-full px-2.5 py-1.5 rounded border border-[#DBE2EF]" />
           </div>
         </div>
@@ -3065,7 +3070,7 @@
         const orderPayload = {
           slot_id: slot.id,
           items: c.entries.map(e => ({
-            item_id: e.menu_item_id,
+            menu_item_id: e.menu_item_id,
             quantity: e.quantity
           })),
           payment_method: isPayAtCanteen ? 'PAY_AT_CANTEEN' : 'ONLINE_UPI',
@@ -4100,8 +4105,8 @@
 
       try {
         const res = await api('POST', '/api/admin/tokens/redeem', {
-          token_str: raw,
-          force_pickup: false
+          token_input: raw,
+          authorized_unpaid_exception: false
         });
         if (res && res.success) {
           showToast(`Token REDEEMED in backend! Order ${res.order_reference || raw} completed.`, 'success');
@@ -5139,20 +5144,22 @@
       const phone = (document.getElementById('pageRegPhone')?.value || '').trim();
       const dept = (document.getElementById('pageRegDept')?.value || '').trim();
       const yr = (document.getElementById('pageRegYear')?.value || '').trim();
-      if (!name || !regNo || !email || !phone) {
-        showToast('Please fill Name, Student/Staff ID, Email, and Mobile Number.', 'error');
+      const password = (document.getElementById('pageRegPassword')?.value || '').trim();
+      if (!name || !regNo || !email || !phone || !password) {
+        showToast('Please fill Name, Student/Staff ID, Email, Mobile Number, and Password.', 'error');
         return;
       }
 
       try {
         const payload = {
           email,
-          password: 'StudentPass#2026',
+          password,
           full_name: name,
-          roll_number: regNo,
+          registration_number: regNo,
           phone,
           academic_year: yr || (selectedPortalRegRole === 'staff' ? 'Faculty / Staff' : 'B.Tech'),
-          division: dept || 'Campus Department'
+          department: dept || 'Campus Department',
+          consent_accepted: true
         };
         const res = await api('POST', '/api/auth/register', payload);
         if (res && res.user) {
@@ -5360,9 +5367,10 @@
       const dept = (document.getElementById('regDept')?.value || '').trim();
       const roleSel = document.getElementById('regRoleSelect')?.value || 'student';
       const consent = document.getElementById('regConsent')?.checked;
+      const password = (document.getElementById('regPassword')?.value || '').trim();
 
-      if (!name || !regNo || !email || !phone || !consent) {
-        showToast('Please fill all required registration fields and accept the data-use consent.', 'error');
+      if (!name || !regNo || !email || !phone || !consent || !password) {
+        showToast('Please fill all required registration fields, enter a password, and accept the data-use consent.', 'error');
         return;
       }
       if (APP_STATE.users.some(u => u.email === email || u.registration_number === regNo)) {
