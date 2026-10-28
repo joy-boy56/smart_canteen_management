@@ -2019,11 +2019,20 @@
     }
 
     function getStandardDateChoices() {
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const dayAfter = new Date(today);
+      dayAfter.setDate(dayAfter.getDate() + 2);
+      const formatDate = (d) => d.toISOString().split('T')[0];
+      const formatLabel = (d) => {
+        const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+        return d.toLocaleDateString('en-US', opts);
+      };
       return [
-        { label: 'Today (Oct 27)', value: '2026-10-27' },
-        { label: 'Tomorrow (Oct 28)', value: '2026-10-28' },
-        { label: 'Day After (Oct 29)', value: '2026-10-29' },
-        { label: 'Demo Date (Oct 18)', value: '2026-10-18' }
+        { label: `Today (${formatLabel(today)})`, value: formatDate(today) },
+        { label: `Tomorrow (${formatLabel(tomorrow)})`, value: formatDate(tomorrow) },
+        { label: `Day After (${formatLabel(dayAfter)})`, value: formatDate(dayAfter) }
       ];
     }
 
@@ -2082,7 +2091,7 @@
     }
 
     async function loadSlots(dateStr) {
-      const d = dateStr || APP_STATE.selectedSlotDate || '2026-10-27';
+      const d = dateStr || APP_STATE.selectedSlotDate || new Date().toISOString().split('T')[0];
       try {
         const data = await api('GET', `/api/slots?slot_date=${d}`);
         if (Array.isArray(data) && data.length) {
@@ -2239,7 +2248,7 @@
     const APP_STATE = {
       isBackendLive: false,
       apiToken: null,
-      selectedSlotDate: '2026-10-27',
+      selectedSlotDate: new Date().toISOString().split('T')[0],
       workspaceMode: window.location.pathname.startsWith('/admin') ? 'admin' : 'student_login',
       studentTab: 'menu',
       adminTab: 'overview',
@@ -4496,7 +4505,7 @@
 
       try {
         await api('POST', '/api/admin/observations', {
-          observation_date: APP_STATE.selectedSlotDate || '2026-10-27',
+          observation_date: APP_STATE.selectedSlotDate || new Date().toISOString().split('T')[0],
           slot_label: slot,
           duration_minutes: dur,
           arrivals_count: arr,
@@ -4514,7 +4523,7 @@
 
       APP_STATE.observations.unshift({
         id: APP_STATE.observations.length + 1,
-        observation_date: '2026-10-27',
+        observation_date: APP_STATE.selectedSlotDate || new Date().toISOString().split('T')[0],
         slot_label: slot,
         start_time: '12:00',
         end_time: '12:15',
