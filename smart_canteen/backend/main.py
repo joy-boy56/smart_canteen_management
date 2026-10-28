@@ -105,6 +105,7 @@ def on_startup() -> None:
     init_db()
     seed_default_users()
     seed_default_slots()
+    seed_default_menu()
 
 
 def seed_default_users() -> None:
@@ -170,6 +171,53 @@ def seed_default_slots() -> None:
                 print("✅ Default pickup slots seeded on startup")
     except Exception as e:
         print(f"⚠️ Slot seed check skipped: {e}")
+
+
+def seed_default_menu() -> None:
+    """Seed default menu items if empty."""
+    from backend.database import get_database_path
+    import sqlite3
+
+    db_path = get_database_path()
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.execute("SELECT COUNT(*) FROM menu_items")
+            if cursor.fetchone()[0] == 0:
+                now = utcnow_iso()
+                default_menu = [
+                    # Breakfast
+                    ("BRK-001", "Masala Dosa with Sambar & Chutney", "Crispy rice crepe with potato filling, served with sambar and coconut chutney", "Breakfast", 6500, 8.0, 1.2),
+                    ("BRK-002", "Idli (2 pcs) with Sambar & Chutney", "Steamed rice cakes served with sambar and chutney", "Breakfast", 4000, 6.0, 1.0),
+                    ("BRK-003", "Medu Vada (2 pcs) with Sambar", "Crispy lentil donuts served with sambar", "Breakfast", 4500, 7.0, 1.1),
+                    ("BRK-004", "Upma with Coconut Chutney", "Savory semolina porridge with vegetables", "Breakfast", 3500, 5.0, 0.9),
+                    ("BRK-005", "Pongal with Chutney & Vada", "Rice and lentil porridge with spices, served with chutney and vada", "Breakfast", 5000, 8.0, 1.0),
+                    # Main Course
+                    ("MAIN-001", "Kerala Veg Meals Thali", "Rice, sambar, rasam, avial, thoran, pappadam, pickle, curd", "Main Course", 9500, 12.0, 1.5),
+                    ("MAIN-002", "Hyderabadi Veg Dum Biryani", "Basmati rice cooked with vegetables and aromatic spices", "Main Course", 11000, 15.0, 1.8),
+                    ("MAIN-003", "Veg Pulao with Raita", "Fragrant rice with mixed vegetables, served with raita", "Main Course", 8500, 10.0, 1.3),
+                    ("MAIN-004", "Chole Bhature", "Spicy chickpeas with deep-fried bread", "Main Course", 9000, 12.0, 1.4),
+                    # Snacks
+                    ("SNK-001", "Samosa (2 pcs) with Chutney", "Crispy triangular pastries with spiced potato filling", "Snacks", 3000, 5.0, 0.8),
+                    ("SNK-002", "Bread Pakora (2 pcs)", "Bread slices dipped in gram flour batter and fried", "Snacks", 3500, 6.0, 1.0),
+                    ("SNK-003", "Bajji (3 pcs) - Onion/Potato/Mirchi", "Assorted vegetable fritters", "Snacks", 4000, 7.0, 1.0),
+                    # Beverages
+                    ("BEV-001", "Kumbakonam Degree Filter Coffee", "Traditional South Indian filter coffee", "Beverages", 2500, 3.0, 0.5),
+                    ("BEV-002", "Masala Chai", "Spiced Indian tea with milk", "Beverages", 1500, 2.0, 0.4),
+                    ("BEV-003", "Fresh Lime Soda", "Refreshing lime soda with mint", "Beverages", 3000, 2.0, 0.3),
+                    ("BEV-004", "Buttermilk (Chaas)", "Spiced buttermilk with curry leaves", "Beverages", 2000, 2.0, 0.3),
+                    # Desserts
+                    ("DES-001", "Gulab Jamun (2 pcs)", "Deep-fried milk solids soaked in sugar syrup", "Desserts", 4000, 3.0, 0.6),
+                    ("DES-002", "Payasam", "Traditional rice pudding with jaggery and coconut", "Desserts", 3500, 4.0, 0.5),
+                ]
+                for code, name, desc, cat, price, prep, workload in default_menu:
+                    conn.execute("""
+                        INSERT INTO menu_items (item_code, name, description, category, price_paise, prep_time_minutes, workload_factor, is_available, is_archived, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (code, name, desc, cat, price, prep, workload, 1, 0, now, now))
+                conn.commit()
+                print("✅ Default menu items seeded on startup")
+    except Exception as e:
+        print(f"⚠️ Menu seed check skipped: {e}")
 
 
 @app.get("/api/health", tags=["Health"])
