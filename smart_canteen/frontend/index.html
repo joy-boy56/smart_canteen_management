@@ -2207,11 +2207,20 @@
 
     async function loadInitialDataForRole(role) {
       renderDateChips();
+      // Force fresh slot load on every role switch
+      APP_STATE.slots = [];
       await Promise.allSettled([
         loadMenuItems(),
         loadSlots(APP_STATE.selectedSlotDate),
         loadPaymentConfig()
       ]);
+      // Validate selected slot still exists
+      if (APP_STATE.selectedSlotId) {
+        const validSlot = APP_STATE.slots.find(s => s.id === APP_STATE.selectedSlotId && s.status === 'OPEN');
+        if (!validSlot && APP_STATE.slots.length > 0) {
+          APP_STATE.selectedSlotId = APP_STATE.slots[0].id;
+        }
+      }
       if (role === 'admin') {
         await Promise.allSettled([
           loadAdminOrders(),

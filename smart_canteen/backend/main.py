@@ -217,6 +217,7 @@ def register_student(
         value=token,
         httponly=True,
         samesite="lax",
+        secure=settings.APP_ENV == "production",
         max_age=settings.SESSION_EXPIRE_MINUTES * 60,
     )
     return {
@@ -247,6 +248,7 @@ def login_user(
         value=token,
         httponly=True,
         samesite="lax",
+        secure=settings.APP_ENV == "production",
         max_age=settings.SESSION_EXPIRE_MINUTES * 60,
     )
     return {
@@ -258,7 +260,12 @@ def login_user(
 
 @app.post("/api/auth/logout", tags=["Auth"])
 def logout_user(response: Response) -> Dict[str, Any]:
-    response.delete_cookie(settings.SESSION_COOKIE_NAME)
+    response.delete_cookie(
+        settings.SESSION_COOKIE_NAME,
+        httponly=True,
+        samesite="lax",
+        secure=settings.APP_ENV == "production",
+    )
     return {"status": "logged_out"}
 
 
