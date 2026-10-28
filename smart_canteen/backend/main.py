@@ -103,6 +103,39 @@ app.add_middleware(
 @app.on_event("startup")
 def on_startup() -> None:
     init_db()
+    seed_default_users()
+
+
+def seed_default_users() -> None:
+    """Seed default users on first run if database is empty."""
+    from backend.database import get_database_path
+    from backend.security import hash_password
+    import sqlite3
+
+    db_path = get_database_path()
+    try:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.execute("SELECT COUNT(*) FROM users")
+            if cursor.fetchone()[0] == 0:
+                now = utcnow_iso()
+                default_users = [
+                    ("Admin", "ADMIN-001", "admin@smartcanteen.edu.in", "9447000001",
+                     "Operations Research & Admin", "Canteen Administrator", "admin", "AdminPass#2026"),
+                    ("Ananya Nair", "CET2026CS041", "ananya@cet.ac.in", "9847112233",
+                     "Computer Science & Engineering", "S5 B.Tech", "student", "StudentPass#2026"),
+                    ("Meera Nair", "STAFF-001", "meera.nair@cet.ac.in", "9447000002",
+                     "Canteen Operations", "Faculty / Staff", "student", "StaffPass#2026"),
+                ]
+                for name, reg, email, phone, dept, year, role, pwd in default_users:
+                    conn.execute("""
+                        INSERT INTO users (full_name, registration_number, email, phone, department, academic_year,
+                                         password_hash, role, consent_accepted, preferences_json, is_active, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (name, reg, email, phone, dept, year, hash_password(pwd), role, 1, "{}", 1, now, now))
+                conn.commit()
+                print("✅ Default users seeded on startup")
+    except Exception as e:
+        print(f"⚠️ Seed check skipped: {e}")
 
 
 @app.get("/api/health", tags=["Health"])
