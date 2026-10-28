@@ -2094,8 +2094,9 @@
       const d = dateStr || APP_STATE.selectedSlotDate || new Date().toISOString().split('T')[0];
       try {
         const data = await api('GET', `/api/slots?slot_date=${d}`);
-        if (Array.isArray(data) && data.length) {
-          APP_STATE.slots = data;
+        const slots = data?.slots;
+        if (Array.isArray(slots) && slots.length) {
+          APP_STATE.slots = slots;
           if (!APP_STATE.slots.some(s => s.id === APP_STATE.selectedSlotId)) {
             APP_STATE.selectedSlotId = APP_STATE.slots[0].id;
           }
